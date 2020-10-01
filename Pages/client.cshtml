@@ -1,0 +1,87 @@
+﻿@page
+
+    <div style="background-color:brown;color:white;">
+        <table border="1" id="result">
+            <tr>
+                <td>ID</td>
+                <td>NAME</td>
+                <td>SALARY</td>
+                <td>DEPARTMENT</td>
+                <td>LOCATION</td>
+            </tr>
+        </table>
+        <table border="1" id="result1">
+            <tr>
+                <td>ID</td>
+                <td>NAME</td>
+                <td>SALARY</td>
+                <td>DEPARTMENT</td>
+                <td>LOCATION</td>
+            </tr>
+        </table>
+
+    </div>
+    <div id="find" style="float:left;">
+        <input type="text" id="salary" placeholder="Search Salary" />
+        <input type="button" value="SEARCH" onclick="search_salary()" />
+        <input type="button" value="REFRESH" onclick="refresh_data()" />
+    </div>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#result1").hide();
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:44310/handler?=employee_name',
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#result").append("<tr><td>" + data[i].Id + "</td><td>" + data[i].Name + "</td><td>" + data[i].Salary + "</td><td>" + data[i].Dep + "</td><td>" + data[i].Loc + "</td></tr>");
+                }
+            },
+            error: function () {
+                alert("Page Not Found");
+            }
+
+        });
+    });
+    function search_salary() {
+        var salary = $("#salary").val();
+        if (salary != null && salary.length > 0) {
+            $("#result").hide();
+            $("#result1").show();
+            $.ajax({
+                type: 'GET',
+                url: 'https://localhost:44310/handler?handler=Employee_find&salary=' + salary,
+                dataType: "json",
+                success: function (data) {
+                    if (data == null) {
+                        $("#result1").html("<h1 style='color:green;'>Sorry No Record Found</h1>");
+                    }
+                    else
+                    {
+                            var jsonObjArray = []; // = new Array();
+                            jsonObjArray.push(data);
+                            for (var i = 0; i < jsonObjArray.length; i++)
+                            {
+                            
+                                $("#result1").html("<tr><td>ID</td><td>NAME</td><td>SALARY</td><td>DEPARTMENT</td><td>LOCATION</td></tr><tr><td>" + jsonObjArray[i].id + "</td><td>" + jsonObjArray[i].name + "</td><td>" + jsonObjArray[i].salary + "</td><td>" + jsonObjArray[i].dep + "</td><td>" + jsonObjArray[i].loc + "</td></tr>");
+                            }
+                    }
+            },
+            error: function () {
+                alert("Page Not Found");
+            }
+            });
+        }
+        else {
+            alert("Enter Salary");
+        }
+    }
+    function refresh_data()
+    {
+        $("#result1").hide();
+        $("#result").show();
+    }
+</script>
